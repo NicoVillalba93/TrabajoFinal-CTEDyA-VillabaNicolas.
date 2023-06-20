@@ -51,39 +51,32 @@ namespace tpfinal
             /*En primer lugar, se declaran las variables que nos van a ayudar a almacenar4
               los caminos encontrados, los nodos y los caminos actuales.*/
             List<List<DatoDistancia>> caminosEncontrados = new List<List<DatoDistancia>>();
-            Cola<ArbolGeneral<DatoDistancia>> c = new Cola<ArbolGeneral<DatoDistancia>>();
-            Cola<List<DatoDistancia>> caminosActuales = new Cola<List<DatoDistancia>>();
+            Cola<ArbolGeneral<DatoDistancia>> cola = new Cola<ArbolGeneral<DatoDistancia>>();
+            cola.encolar(arbol);
 
-            //Inicializamos con la raíz del árbol y un camino vacío.
-            c.encolar(arbol);
-            caminosActuales.encolar(new List<DatoDistancia>());
-
-            //Mientras haya elementos en la cola, iterar.
-            while (c.cantidadElementos() > 0)
+            while (cola.cantidadElementos() > 0)
             {
-                /* La variable aux se utiliza para almacenar el nodo actual que se está
-                  procesando en cada iteración del bucle while al igual que el camino actual
-                    que se ha recorrido desde la raíz hasta aux */
-                ArbolGeneral<DatoDistancia> aux = c.desencolar();
-                List<DatoDistancia> caminoActual = caminosActuales.desencolar();
-                caminoActual.Add(aux.getDatoRaiz());
+                ArbolGeneral<DatoDistancia> nodo = cola.desencolar();
 
-                if (aux.esHoja())
+                if (nodo.esHoja())
                 {
-                    //Si llego a una hoja, agrega el camino actual a la lista de caminos
-                    caminosEncontrados.Add(caminoActual);
+                    List<DatoDistancia> camino = new List<DatoDistancia>();
+                    ArbolGeneral<DatoDistancia> aux = nodo;
+
+                    while (aux != null)
+                    {
+                        camino.Add(aux.getDatoRaiz());
+                        aux = aux.getPadre();
+                    }
+
+                    camino.Reverse(); // Invertir el orden del camino
+                    caminosEncontrados.Add(camino);
                 }
                 else
                 {
-                    //Sino se recorre cada hijo del nodo actual y se actualizan los caminos
-                    foreach (var hijo in aux.getHijos()) 
+                    foreach (var hijo in nodo.getHijos())
                     {
-                        /*Se crea una copia del camino actual para tener un nuevo camino
-                         por separado para cada hijo y evitar modificar el camino
-                        actual que ya se ha recorrido.*/
-                        var nuevoCamino = new List<DatoDistancia>(caminoActual); 
-                        c.encolar(hijo);
-                        caminosActuales.encolar(nuevoCamino);
+                        cola.encolar(hijo);
                     }
                 }
             }
